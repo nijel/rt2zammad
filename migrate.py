@@ -47,6 +47,7 @@ if not source.login():
     sys.exit(2)
 
 if os.path.exists('rt2zammad.cache'):
+    # Load RT from cache
     with open('rt2zammad.cache', 'rb') as handle:
         data = pickle.load(handle)
     users = data['users']
@@ -54,6 +55,7 @@ if os.path.exists('rt2zammad.cache'):
     tickets = data['tickets']
 
 else:
+    # Load RT from remote
     users = {}
     tickets = []
     queues = set()
@@ -84,3 +86,11 @@ else:
         })
     with open('rt2zammad.cache', 'wb') as handle:
         data = pickle.dump({'users': users, 'queues': queues, 'tickets': tickets}, handle)
+
+# Create tags
+tag_list = TagList(target)
+tags = {tag['name'] for tag in tag_list.all()}
+for queue in queues:
+    queue = queue.lower().split()[0]
+    if queue not in tags:
+        tag_list.create({'name': queue})
