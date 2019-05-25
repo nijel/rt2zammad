@@ -105,3 +105,5 @@ venv.bak/
 
 # configuration
 rt2zammad.json
+# cache
+rt2zammad.cache
