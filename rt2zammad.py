@@ -173,9 +173,6 @@ for ticket in tickets:
             "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
             "group": "Users",
             "state_id": STATUSMAP[ticket["ticket"]["Status"]],
-            "customer_id": "guess:{}".format(
-                users[ticket["ticket"]["Creator"]]["EmailAddress"]
-            ),
             "note": "RT-import:{}".format(ticket["ticket"]["id"]),
             "article": {
                 "subject": ticket["ticket"]["Subject"],
