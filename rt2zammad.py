@@ -137,12 +137,13 @@ for user in target.user.all():
 
 def get_user(userdata):
     email = userdata["EmailAddress"]
+    lemail = email.lower()
     # Search existing users
-    if email not in USERMAP:
+    if lemail not in USERMAP:
         for user in target.user.search({"query": email}):
             USERMAP[user["email"].lower()] = user["login"]
     # Create new one
-    if email not in USERMAP:
+    if lemail not in USERMAP:
         kwargs = {"email": email}
         if "RealName" in userdata:
             realname = userdata["RealName"]
@@ -158,7 +159,7 @@ def get_user(userdata):
         user = target.user.create(kwargs)
         USERMAP[user["email"].lower()] = user["login"]
 
-    return USERMAP[email.lower()]
+    return USERMAP[lemail]
 
 
 # Create tickets
