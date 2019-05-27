@@ -9,4 +9,5 @@ Known issues:
   workarounded by creating appropriate organizations in Zammad manually or
   temporarily grainting Users group agent privilege.
 * Disabled users from RT can not be accessed by API, thus will lack email
-  address. Enable all users prior to the migration.
+  address and will fail to be created. Enable all users prior to the migration.
+* Timestamps are not preserved. The Zammad API doesn't seem to allow this.
