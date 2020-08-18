@@ -39,6 +39,7 @@ TEMPLATE = """{
 COMMENT_TEMPLATE = """
 Ticket imported from Request Tracker
 
+URL: https://support.weblate.org/Ticket/Display.html?id={numerical_id}
 Created: {Created}
 Resolved: {Resolved}
 """
@@ -172,14 +173,14 @@ def get_user(userdata, attr="login"):
 
 # Create tickets
 for ticket in tickets:
-    label = "RT-{}".format(ticket["ticket"]["id"].split("/")[1])
+    label = "RT-{}".format(ticket["ticket"]["numerical_id"])
     print("Importing {}".format(label))
     new = get_zammad(get_user(users[ticket["ticket"]["Creator"]])).ticket.create(
         {
             "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
             "group": "Users",
             "state_id": STATUSMAP[ticket["ticket"]["Status"]],
-            "note": "RT-import:{}".format(ticket["ticket"]["id"]),
+            "note": "RT-import:{}".format(ticket["ticket"]["numerical_id"]),
             "article": {
                 "subject": ticket["ticket"]["Subject"],
                 "body": ticket["history"][0]["Content"],
