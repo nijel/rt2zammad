@@ -27,9 +27,7 @@ class Tag(Resource):
 
 TEMPLATE = """{
 "zammad_host": "",
-"zammad_user": "",
-"zammad_password": "",
-"zammad_secure": true,
+"zammad_token": "",
 "rt_url": "",
 "rt_user": "",
 "rt_pass": ""
@@ -57,9 +55,7 @@ with open("rt2zammad.json") as handle:
 def get_zammad(**kwargs):
     return ZammadAPI(
         host=config["zammad_host"],
-        username=config["zammad_user"],
-        password=config["zammad_password"],
-        is_secure=config["zammad_secure"],
+        http_token=config["zammad_token"],
         **kwargs
     )
 
