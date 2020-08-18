@@ -196,7 +196,9 @@ for ticket in tickets:
                 "note": "RT-import:{}".format(ticket["ticket"]["original_id"]),
                 "article": {
                     "subject": ticket["ticket"]["Subject"],
-                    "body": "RT ticket merged into {}".format(ticket["ticket"]["numerical_id"]),
+                    "body": "RT ticket merged into {}".format(
+                        ticket["ticket"]["numerical_id"]
+                    ),
                 },
             }
         )
@@ -238,7 +240,9 @@ for ticket in tickets:
                 }
             )
         creator_id = get_user(users[item["Creator"]], "id")
-        chown = creator_id != new["customer_id"]
+        chown = creator_id != new["customer_id"] and "Agent" not in get_user(
+            users[item["Creator"]], "roles"
+        )
         if chown:
             target.ticket.update(new["id"], {"customer_id": creator_id})
         TicketArticle(get_zammad(get_user(users[item["Creator"]]))).create(
