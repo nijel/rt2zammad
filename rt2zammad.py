@@ -132,16 +132,16 @@ STATUSMAP = {"new": 1, "open": 2, "resolved": 4, "rejected": 4, "deleted": 4}
 USERMAP = {}
 
 for user in target.user.all():
-    USERMAP[user["email"].lower()] = user["login"]
+    USERMAP[user["email"].lower()] = user
 
 
-def get_user(userdata):
+def get_user(userdata, attr="login"):
     email = userdata["EmailAddress"]
     lemail = email.lower()
     # Search existing users
     if lemail not in USERMAP:
         for user in target.user.search({"query": email}):
-            USERMAP[user["email"].lower()] = user["login"]
+            USERMAP[user["email"].lower()] = user
     # Create new one
     if lemail not in USERMAP:
         kwargs = {"email": email}
@@ -157,9 +157,9 @@ def get_user(userdata):
             kwargs["lastname"] = last
             kwargs["firstname"] = first
         user = target.user.create(kwargs)
-        USERMAP[user["email"].lower()] = user["login"]
+        USERMAP[user["email"].lower()] = user
 
-    return USERMAP[lemail]
+    return USERMAP[lemail][attr]
 
 
 # Create tickets
@@ -204,6 +204,10 @@ for ticket in tickets:
                     "mime-type": data["ContentType"],
                 }
             )
+        creator_id = get_user(users[item["Creator"]], "id")
+        chown = creator_id != new["customer_id"]
+        if chown:
+            target.ticket.update(new["id"], {"customer_id": creator_id})
         TicketArticle(get_zammad(on_behalf_of=get_user(users[item["Creator"]]))).create(
             {
                 "ticket_id": new["id"],
@@ -212,3 +216,5 @@ for ticket in tickets:
                 "attachments": files,
             }
         )
+        if chown:
+            target.ticket.update(new["id"], {"customer_id": new["customer_id"]})
