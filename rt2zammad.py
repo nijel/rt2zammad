@@ -32,7 +32,9 @@ TEMPLATE = """{
 "zammad_secure": true,
 "rt_url": "",
 "rt_user": "",
-"rt_pass": ""
+"rt_pass": "",
+"rt_start": 1,
+"rt_end": 1000
 }
 """
 
@@ -101,7 +103,7 @@ else:
         if username not in users:
             users[username] = source.get_user(username)
 
-    for i in range(1, 1000):
+    for i in range(config["rt_start"], config["rt_end"]):
         print("Loading ticket {}".format(i))
         ticket = source.get_ticket(i)
         if ticket is None:
