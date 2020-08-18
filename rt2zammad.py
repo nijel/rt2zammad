@@ -106,14 +106,20 @@ else:
         ticket = source.get_ticket(i)
         if ticket is None:
             break
+        ticket["original_id"] = str(i)
         queues.add(ticket["Queue"])
         ensure_user(ticket["Creator"])
         ensure_user(ticket["Owner"])
-        history = source.get_history(i)
-        for item in history:
-            for a, title in item["Attachments"]:
-                attachments[a] = source.get_attachment(i, a)
-            ensure_user(item["Creator"])
+
+        if ticket["original_id"] != ticket["numerical_id"]:
+            # Merged ticket
+            history = []
+        else:
+            history = source.get_history(i)
+            for item in history:
+                for a, title in item["Attachments"]:
+                    attachments[a] = source.get_attachment(i, a)
+                ensure_user(item["Creator"])
         tickets.append({"ticket": ticket, "history": history})
     with open("rt2zammad.cache", "wb") as handle:
         data = pickle.dump(
@@ -173,14 +179,29 @@ def get_user(userdata, attr="login"):
 
 # Create tickets
 for ticket in tickets:
-    label = "RT-{}".format(ticket["ticket"]["numerical_id"])
+    label = "RT-{}".format(ticket["ticket"]["original_id"])
     print("Importing {}".format(label))
+    if ticket["ticket"]["original_id"] != ticket["ticket"]["numerical_id"]:
+        # Merged ticket
+        get_zammad(get_user(users[ticket["ticket"]["Creator"]])).ticket.create(
+            {
+                "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
+                "group": "Users",
+                "state_id": 4,
+                "note": "RT-import:{}".format(ticket["ticket"]["original_id"]),
+                "article": {
+                    "subject": ticket["ticket"]["Subject"],
+                    "body": "RT ticket merged into {}".format(ticket["ticket"]["numerical_id"]),
+                },
+            }
+        )
+        continue
     new = get_zammad(get_user(users[ticket["ticket"]["Creator"]])).ticket.create(
         {
             "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
             "group": "Users",
             "state_id": STATUSMAP[ticket["ticket"]["Status"]],
-            "note": "RT-import:{}".format(ticket["ticket"]["numerical_id"]),
+            "note": "RT-import:{}".format(ticket["ticket"]["original_id"]),
             "article": {
                 "subject": ticket["ticket"]["Subject"],
                 "body": ticket["history"][0]["Content"],
