@@ -34,7 +34,8 @@ TEMPLATE = """{
 "rt_user": "",
 "rt_pass": "",
 "rt_start": 1,
-"rt_end": 1000
+"rt_end": 1000,
+"usermap": {}
 }
 """
 
@@ -155,6 +156,8 @@ for user in target.user.all():
 def get_user(userdata, attr="login"):
     email = userdata["EmailAddress"]
     lemail = email.lower()
+    if lemail in config["usermap"]:
+        email = lemail = config["usermap"][lemail]
     # Search existing users
     if lemail not in USERMAP:
         for user in target.user.search({"query": email}):
