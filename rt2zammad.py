@@ -54,14 +54,22 @@ with open("rt2zammad.json") as handle:
     config = json.load(handle)
 
 
-def get_zammad(**kwargs):
-    return ZammadAPI(
-        host=config["zammad_host"],
-        username=config["zammad_user"],
-        password=config["zammad_password"],
-        is_secure=config["zammad_secure"],
-        **kwargs
-    )
+ZAMMADS = {}
+
+
+def get_zammad(user=None):
+    if user not in ZAMMADS:
+        kwargs = {}
+        if user:
+            kwargs["on_behalf_of"] = user
+        ZAMMADS[user] = ZammadAPI(
+            host=config["zammad_host"],
+            username=config["zammad_user"],
+            password=config["zammad_password"],
+            is_secure=config["zammad_secure"],
+            **kwargs
+        )
+    return ZAMMADS[user]
 
 
 target = get_zammad()
@@ -166,9 +174,7 @@ def get_user(userdata, attr="login"):
 for ticket in tickets:
     label = "RT-{}".format(ticket["ticket"]["id"].split("/")[1])
     print("Importing {}".format(label))
-    new = get_zammad(
-        on_behalf_of=get_user(users[ticket["ticket"]["Creator"]])
-    ).ticket.create(
+    new = get_zammad(get_user(users[ticket["ticket"]["Creator"]])).ticket.create(
         {
             "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
             "group": "Users",
@@ -208,7 +214,7 @@ for ticket in tickets:
         chown = creator_id != new["customer_id"]
         if chown:
             target.ticket.update(new["id"], {"customer_id": creator_id})
-        TicketArticle(get_zammad(on_behalf_of=get_user(users[item["Creator"]]))).create(
+        TicketArticle(get_zammad(get_user(users[item["Creator"]]))).create(
             {
                 "ticket_id": new["id"],
                 "body": item["Content"],
