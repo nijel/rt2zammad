@@ -35,7 +35,8 @@ TEMPLATE = """{
 "rt_pass": "",
 "rt_start": 1,
 "rt_end": 1000,
-"usermap": {}
+"usermap": {},
+"userdata": {}
 }
 """
 
@@ -165,6 +166,7 @@ def get_user(userdata, attr="login"):
     # Create new one
     if lemail not in USERMAP:
         kwargs = {"email": email}
+        kwargs.update(config["userdata"])
         if "RealName" in userdata:
             realname = userdata["RealName"]
             if ", " in realname:
