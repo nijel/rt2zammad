@@ -154,7 +154,7 @@ for user in target.user.all():
     USERMAP[user["email"].lower()] = user
 
 
-def get_user(userdata, attr="login"):
+def get_user(userdata, attr="login", default=None):
     email = userdata["EmailAddress"]
     lemail = email.lower()
     if lemail in config["usermap"]:
@@ -181,7 +181,10 @@ def get_user(userdata, attr="login"):
         user = target.user.create(kwargs)
         USERMAP[user["email"].lower()] = user
 
-    return USERMAP[lemail][attr]
+    if default is None:
+        return USERMAP[lemail][attr]
+    return USERMAP[lemail]get(attr, default)
+
 
 
 # Create tickets
@@ -243,7 +246,7 @@ for ticket in tickets:
             )
         creator_id = get_user(users[item["Creator"]], "id")
         chown = creator_id != new["customer_id"] and "Agent" not in get_user(
-            users[item["Creator"]], "roles"
+            users[item["Creator"]], "roles", []
         )
         if chown:
             target.ticket.update(new["id"], {"customer_id": creator_id})
