@@ -19,8 +19,9 @@ class Tag(Resource):
     path_attribute = "tags"
 
     def add(self, obj, id, item):
-        response = self._connection.session.get(
-            self.url + "/add?object=%s&o_id=%d&item=%s" % (obj, id, item)
+        response = self._connection.session.post(
+            self.url + "/add",
+            data={"object": obj, "id": id, "item": item}
         )
         return self._raise_or_return_json(response)
 
