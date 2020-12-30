@@ -111,7 +111,7 @@ else:
             users[username] = source.get_user(username)
 
     for i in range(config["rt_start"], config["rt_end"]):
-        print("Loading ticket {}".format(i))
+        print(f"Loading ticket {i}")
         ticket = source.get_ticket(i)
         if ticket is None:
             break
