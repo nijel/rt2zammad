@@ -48,7 +48,7 @@ TEMPLATE = """{
 COMMENT_TEMPLATE = """
 Ticket imported from Request Tracker
 
-URL: https://support.weblate.org/Ticket/Display.html?id={numerical_id}
+URL: https://oldsupport.weblate.org/Ticket/Display.html?id={numerical_id}
 Created: {Created}
 Resolved: {Resolved}
 """
