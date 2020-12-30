@@ -9,4 +9,8 @@ Known issues:
   address and will fail to be created. Enable all users prior to the migration.
 * Timestamps are not preserved. The Zammad API doesn't seem to allow this.
 * Zammad will send notification for all actions, you probably want to disable
-  outgoing mail for time of import.
+  outgoing mail for time of import:
+  * Disable all triggers sending mail (Manage / Trigger
+  * Disable notifications for all existing users (seems like every user has to do this)
+  * Safer approach might be to use own SMTP server and temporarily discard all
+    mail from Zammad for the migration run.
