@@ -23,7 +23,7 @@ class Tag(Resource):
             self.url + "/add",
             data={
                 "object": obj,
-                "id": id,
+                "o_id": id,
                 "item": item,
             },
         )
