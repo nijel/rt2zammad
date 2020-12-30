@@ -23,6 +23,7 @@ myself. Pull requests are still welcome though.
 
 ## Usage
 
+0. Review the script code, most likely it will not work out of box for you.
 1. Prepare virtualenv and install dependencies: `virtualenv .venv --python python 3; . .venv/bin/activate ; pip install -r requirements.txt`
 2. Start `rt2zammad.py`, it will display template for configuration file.
 3. Fill in the template and save it as `rt2zammad.json`.
