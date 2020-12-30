@@ -77,7 +77,7 @@ def get_zammad(user=None):
             username=config["zammad_user"],
             password=config["zammad_password"],
             is_secure=config["zammad_secure"],
-            **kwargs
+            **kwargs,
         )
     return ZAMMADS[user]
 
@@ -214,8 +214,8 @@ for ticket in tickets:
         merged = True
         create_args["state_id"] = 4
         create_args["article"]["body"] = "RT ticket merged into {}".format(
-                        ticket["ticket"]["numerical_id"]
-                    )
+            ticket["ticket"]["numerical_id"]
+        )
         new = get_zammad(creator).ticket.create(create_args)
     else:
         create_args["state_id"] = STATUSMAP[ticket["ticket"]["Status"]]
@@ -225,7 +225,9 @@ for ticket in tickets:
     print(f"Created ticket {new['id']}")
 
     if ticket["ticket"]["Owner"] and ticket["ticket"]["Owner"] != "Nobody":
-        get_zammad().ticket.update(new['id'], {"owner_id": get_user(users[ticket["ticket"]["Owner"]], "id")})
+        get_zammad().ticket.update(
+            new["id"], {"owner_id": get_user(users[ticket["ticket"]["Owner"]], "id")}
+        )
 
     if merged:
         # Do not add comments to merged ticket
