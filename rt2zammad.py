@@ -183,7 +183,7 @@ def get_user(userdata, attr="login", default=None):
 
     if default is None:
         return USERMAP[lemail][attr]
-    return USERMAP[lemail]get(attr, default)
+    return USERMAP[lemail].get(attr, default)
 
 
 
