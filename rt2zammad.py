@@ -194,14 +194,17 @@ def get_user(userdata, attr="login", default=None):
 # Create tickets
 for ticket in tickets:
     label = "RT-{}".format(ticket["ticket"]["original_id"])
-    print("Importing {}".format(label))
+    creator = get_user(users[ticket["ticket"]["Creator"]])
+    print(f"Importing {label} ({creator})")
+
     if ticket["ticket"]["original_id"] != ticket["ticket"]["numerical_id"]:
         # Merged ticket
-        get_zammad(get_user(users[ticket["ticket"]["Creator"]])).ticket.create(
+        get_zammad(creator).ticket.create(
             {
                 "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
                 "group": "Users",
                 "state_id": 4,
+                "customer": creator,
                 "note": "RT-import:{}".format(ticket["ticket"]["original_id"]),
                 "article": {
                     "subject": ticket["ticket"]["Subject"],
@@ -212,11 +215,12 @@ for ticket in tickets:
             }
         )
         continue
-    new = get_zammad(get_user(users[ticket["ticket"]["Creator"]])).ticket.create(
+    new = get_zammad(creator).ticket.create(
         {
             "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
             "group": "Users",
             "state_id": STATUSMAP[ticket["ticket"]["Status"]],
+            "customer": creator,
             "note": "RT-import:{}".format(ticket["ticket"]["original_id"]),
             "article": {
                 "subject": ticket["ticket"]["Subject"],
