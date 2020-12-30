@@ -208,18 +208,29 @@ for ticket in tickets:
         },
     }
 
+    merged = False
     if ticket["ticket"]["original_id"] != ticket["ticket"]["numerical_id"]:
         # Merged ticket
+        merged = True
         create_args["state_id"] = 4
         create_args["article"]["body"] = "RT ticket merged into {}".format(
                         ticket["ticket"]["numerical_id"]
                     )
-        get_zammad(creator).ticket.create(create_args)
-        continue
-    create_args["state_id"] = STATUSMAP[ticket["ticket"]["Status"]]
-    create_args["article"]["body"] = ticket["history"][0]["Content"]
-    new = get_zammad(creator).ticket.create(create_args)
+        new = get_zammad(creator).ticket.create(create_args)
+    else:
+        create_args["state_id"] = STATUSMAP[ticket["ticket"]["Status"]]
+        create_args["article"]["body"] = ticket["history"][0]["Content"]
+        new = get_zammad(creator).ticket.create(create_args)
+
     print(f"Created ticket {new['id']}")
+
+    if ticket["ticket"]["Owner"] and ticket["ticket"]["Owner"] != "Nobody":
+        get_zammad().ticket.update(new['id'], {"owner_id": get_user(users[ticket["ticket"]["Owner"]], "id")})
+
+    if merged:
+        # Do not add comments to merged ticket
+        continue
+
     tag_obj.add("Ticket", new["id"], ticket["ticket"]["Queue"].lower().split()[0])
     ticket_article.create(
         {
