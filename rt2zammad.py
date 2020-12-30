@@ -21,7 +21,11 @@ class Tag(Resource):
     def add(self, obj, id, item):
         response = self._connection.session.post(
             self.url + "/add",
-            data={"object": obj, "id": id, "item": item}
+            data={
+                "object": obj,
+                "id": id,
+                "item": item,
+            },
         )
         return self._raise_or_return_json(response)
 
@@ -185,7 +189,6 @@ def get_user(userdata, attr="login", default=None):
     if default is None:
         return USERMAP[lemail][attr]
     return USERMAP[lemail].get(attr, default)
-
 
 
 # Create tickets
