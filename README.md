@@ -29,3 +29,5 @@ myself. Pull requests are still welcome though.
 4. Start `rt2zammad.py` to perform the migration.
 5. Verify the migration results.
 6. In case you need to roll back Zammad, please follow https://community.zammad.org/t/reset-database-to-start-from-zero/326
+
+Note: The RT content is cached in `rt2zammad.cache`. In case the RT is still receiving updates, you might want to delete the file for consequent runs.
