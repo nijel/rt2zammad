@@ -195,10 +195,11 @@ def get_user(userdata, attr="login", default=None):
 for ticket in tickets:
     label = "RT-{}".format(ticket["ticket"]["original_id"])
     creator = get_user(users[ticket["ticket"]["Creator"]])
+
     print(f"Importing {label} ({creator})")
 
     create_args = {
-        "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
+        "title": ticket["ticket"]["Subject"],
         "group": "Users",
         "customer": creator,
         "note": "RT-import:{}".format(ticket["ticket"]["original_id"]),
