@@ -14,3 +14,7 @@ Known issues:
   * Disable notifications for all existing users (seems like every user has to do this)
   * Safer approach might be to use own SMTP server and temporarily discard all
     mail from Zammad for the migration run.
+
+No further development is expected there. This was used once to migrate
+[Weblate](https://weblate.org/) and I have no intent to improve this script
+myself. Pull requests are still welcome though.
