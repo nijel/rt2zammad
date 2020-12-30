@@ -197,37 +197,28 @@ for ticket in tickets:
     creator = get_user(users[ticket["ticket"]["Creator"]])
     print(f"Importing {label} ({creator})")
 
+    create_args = {
+        "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
+        "group": "Users",
+        "customer": creator,
+        "note": "RT-import:{}".format(ticket["ticket"]["original_id"]),
+        "article": {
+            "subject": ticket["ticket"]["Subject"],
+        },
+    }
+
     if ticket["ticket"]["original_id"] != ticket["ticket"]["numerical_id"]:
         # Merged ticket
-        get_zammad(creator).ticket.create(
-            {
-                "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
-                "group": "Users",
-                "state_id": 4,
-                "customer": creator,
-                "note": "RT-import:{}".format(ticket["ticket"]["original_id"]),
-                "article": {
-                    "subject": ticket["ticket"]["Subject"],
-                    "body": "RT ticket merged into {}".format(
+        create_args["state_id"] = 4
+        create_args["article"]["body"] = "RT ticket merged into {}".format(
                         ticket["ticket"]["numerical_id"]
-                    ),
-                },
-            }
-        )
+                    )
+        get_zammad(creator).ticket.create(create_args)
         continue
-    new = get_zammad(creator).ticket.create(
-        {
-            "title": "{} [{}]".format(ticket["ticket"]["Subject"], label),
-            "group": "Users",
-            "state_id": STATUSMAP[ticket["ticket"]["Status"]],
-            "customer": creator,
-            "note": "RT-import:{}".format(ticket["ticket"]["original_id"]),
-            "article": {
-                "subject": ticket["ticket"]["Subject"],
-                "body": ticket["history"][0]["Content"],
-            },
-        }
-    )
+    create_args["state_id"] = STATUSMAP[ticket["ticket"]["Status"]]
+    create_args["article"]["body"] = ticket["history"][0]["Content"]
+    new = get_zammad(creator).ticket.create(create_args)
+    print(f"Created ticket {new['id']}")
     tag_obj.add("Ticket", new["id"], ticket["ticket"]["Queue"].lower().split()[0])
     ticket_article.create(
         {
